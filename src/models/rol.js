@@ -4,7 +4,7 @@ const RolSchema = new Schema({
     nombre: {
         type: String,
     },
-    estado: {
+    activo: {
         type: Boolean,
         default: true
     }

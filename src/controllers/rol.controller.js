@@ -6,7 +6,7 @@ const paginarRoles = async (req, res) => {
     const limiteNumero = parseInt(limite, 10);
     const skip = (paginaNumero - 1) * limiteNumero;
     const query = {
-        estado: true
+        activo: true
     }
     const [totalResultados, roles] = await Promise.all([
         Rol.countDocuments(query),
@@ -40,7 +40,7 @@ const crearRol = async (req, res) => {
         const { body: rolBody } = req;
         const regexpNombre = new RegExp(`^${rolBody.nombre}$`, 'i');
 
-        const rol = await Rol.findOne({ nombre: regexpNombre, estado: true });
+        const rol = await Rol.findOne({ nombre: regexpNombre, activo: true });
         if (rol) {
             return res.status(400).send({
                 estado: 'VALIDACION_DB',
@@ -78,7 +78,7 @@ const obtenerRol = async (req, res) => {
     try {
         const { rolId } = req.params;
 
-        const rol = await Rol.findOne({ _id: rolId, estado: true });
+        const rol = await Rol.findOne({ _id: rolId, activo: true });
         if (!rol) {
             return res.status(404).send({
                 estado: 'VALIDACION_DB',
@@ -92,7 +92,9 @@ const obtenerRol = async (req, res) => {
 
         return res.status(200).send({
             estado: 'OK',
-            respuesta: rolResponse
+            respuesta: {
+                rol: rolResponse
+            }
         })
     } catch (error) {
         return res.status(500).send({
@@ -104,7 +106,7 @@ const obtenerRol = async (req, res) => {
 
 const actualizarRol = async (req, res) => {
     const { rolId } = req.params;
-    const rolEncontrado = await Rol.findOne({ _id: rolId, estado: true });
+    const rolEncontrado = await Rol.findOne({ _id: rolId, activo: true });
     if (!rolEncontrado) {
         return res.status(404).send({
             estado: 'VALIDACION_DB',
@@ -113,7 +115,7 @@ const actualizarRol = async (req, res) => {
     }
     const { body: rolBody } = req;
     const regexpNombre = new RegExp(`^${rolBody.nombre}$`, 'i');
-    const rol = await Rol.findOne({ nombre: regexpNombre, estado: true, _id: { $ne: rolId } })
+    const rol = await Rol.findOne({ nombre: regexpNombre, activo: true, _id: { $ne: rolId } })
     if (rol) {
         return res.status(400).send({
             estado: 'VALIDACION_DB',
@@ -140,7 +142,7 @@ const actualizarRol = async (req, res) => {
 
 const eliminarRol = async (req, res) => {
     const { rolId } = req.params;
-    const rolEncontrado = await Rol.findOne({ _id: rolId, estado: true });
+    const rolEncontrado = await Rol.findOne({ _id: rolId, activo: true });
     if (!rolEncontrado) {
         return res.status(404).send({
             estado: 'VALIDACION_DB',
@@ -148,7 +150,7 @@ const eliminarRol = async (req, res) => {
         });
     }
     const rolData = {
-        estado: false
+        activo: false
     }
     const rolAct = await Rol.findByIdAndUpdate(rolId, rolData, { new: true });
 
